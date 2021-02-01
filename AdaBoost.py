@@ -3,14 +3,14 @@ import numpy as np
 from scipy.optimize import differential_evolution
 import math
 
-# 基本分类器
+# 基本分类器，设置为x>v或x<v
 def basic_classifier(x, v):
     if x < v:
         return 1
     else:
         return -1
 
-# Adaboost提升算法，基本分类器设置为x>v或x<v
+# Adaboost提升算法
 class AdaBoost:
     def __init__(self, x_train, y_train):
         self.x = x_train
