@@ -37,7 +37,7 @@ class AdaBoost:
         for j in range(M):
             error = minimize(fun = self.error_rate,
                              x0 = 2,
-                             bounds = bnds)
+                             bounds = bnds) # 这里有个问题是优化结果很依赖x0的取值，不知为何
             e = error.fun
             v = error.x
             v_lst.append(error.x[0])
