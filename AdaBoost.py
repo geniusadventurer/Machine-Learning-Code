@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.optimize import minimize
+from scipy.optimize import differential_evolution
 import math
 
 # 基本分类器
@@ -35,13 +35,12 @@ class AdaBoost:
         bnds = ((self.x.min(),self.x.max()),) # 只有一组限制条件，也要做成(bnds,)的元组，否则读不出来
         v_lst = []
         for j in range(M):
-            error = minimize(fun = self.error_rate,
-                             x0 = 2,
-                             bounds = bnds) # 这里有个问题是优化结果很依赖x0的取值，不知为何
+            error = differential_evolution(func = self.error_rate,
+                             bounds = bnds)
             e = error.fun
             v = error.x
             v_lst.append(error.x[0])
-            alpha.append((1/2) * math.log((1-e)/e))
+            alpha.append(0.5 * math.log((1-e)/e))
             exp = np.exp(list(-alpha[j] * np.array(self.y) * np.array(self.clf(v)))) # 太奇怪了，做成np.array就用不了np.exp，非要转成list，这个问题真的不知道是怎么回事
             self.w = np.divide( np.multiply(self.w, exp), np.sum(np.multiply(self.w, exp)) )
         self.v = v_lst
