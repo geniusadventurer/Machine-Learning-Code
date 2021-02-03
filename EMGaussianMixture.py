@@ -4,7 +4,7 @@ import math
 
 # 高斯分布模型的EM算法估计
 class EMGaussianMixture:
-    # 设初值为均匀分布
+    # 设初值为随机分布
     def __init__(self, n_gaussian):
         self.n_gaussian = n_gaussian
         r = np.random.rand(n_gaussian)
