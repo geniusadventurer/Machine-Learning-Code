@@ -21,13 +21,13 @@ class Layer:
         self.db = [None] * (n_layers-1)
         self.max_iter = 1000
 
-    # 初始值与前向传播
-    def layer(self, i, *args):
-        n_this_node = self.n_nodes[i]
-        # 输入层
-        if i == 0:
-            self.value[i] = np.array(args[0])
-        # 中间层与输出层的数值获取
+    # 输入层
+    def input_layer(self, *args):
+        self.value[0] = np.array(args[0])
+        return self
+
+    # 前向传播（中间层与输出层）
+    def forward(self, i, *args):
         if i != 0:
             self.value[i] = np.frompyfunc(sigmoid,1,1)(np.dot(self.w[i-1].T, self.value[i-1]) + self.b[i-1])
         return self
@@ -46,25 +46,26 @@ class Layer:
 
 
 if __name__ == '__main__':
+    # 初始化4层神经网络（参数1），每层神经元数为3（输入）、4（隐藏[0]）、2（隐藏[1]）、4（输出）
     network = Layer(4,3,4,2,4)
     y_train = np.array([[1],[1],[0],[0]])
-    # 创建输出层：第1个参数为0，第2个参数为(-1,1)数组
-    input_layer = network.layer(0,[[2],[4],[6]])
-    # 创建隐藏层：只保留第1个参数
+    # 创建输入层：目前支持参数为(-1,1)数组
+    input_layer = network.input_layer([[2],[4],[6]])
+    # 创建隐藏层：参数为在网络中的层次数
     hidden_layers = [None] * (network.n_layers-2)
-    hidden_layers[0] = network.layer(network.n_layers-3)
-    hidden_layers[1] = network.layer(network.n_layers-2)
+    hidden_layers[0] = network.forward(network.n_layers-3)
+    hidden_layers[1] = network.forward(network.n_layers-2)
     # 创建输出层：只保留第1个参数
-    output_layer = network.layer(network.n_layers-1)
+    output_layer = network.forward(network.n_layers-1)
     # 迭代
     n_iter = 0
     while n_iter < 100:
         hidden_layers[1].backward(network.n_layers-2, 0.7)
         hidden_layers[0].backward(network.n_layers-3, 0.6)
         input_layer.backward(0, 0.7)
-        hidden_layers[0].layer(network.n_layers-3)
-        hidden_layers[1].layer(network.n_layers-2)
-        output_layer.layer(network.n_layers-1)
+        hidden_layers[0].forward(network.n_layers-3)
+        hidden_layers[1].forward(network.n_layers-2)
+        output_layer.forward(network.n_layers-1)
         if math.sqrt(np.sum(np.square(network.prediction() - y_train))) <= 0.01:
             break
         n_iter += 1
