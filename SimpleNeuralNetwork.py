@@ -48,24 +48,25 @@ class Layer:
 if __name__ == '__main__':
     # 初始化4层神经网络（参数1），每层神经元数为3（输入）、4（隐藏[0]）、2（隐藏[1]）、4（输出）
     network = Layer(4,3,4,2,4)
+    n = network.n_layers
     y_train = np.array([[1],[1],[0],[0]])
-    # 创建输入层：目前支持参数为(-1,1)数组
+    # 创建输入层：参数为(-1,1)数组
     input_layer = network.input_layer([[2],[4],[6]])
     # 创建隐藏层：参数为在网络中的层次数
-    hidden_layers = [None] * (network.n_layers-2)
-    hidden_layers[0] = network.forward(network.n_layers-3)
-    hidden_layers[1] = network.forward(network.n_layers-2)
+    hidden_layers = [None] * (n-2)
+    hidden_layers[0] = network.forward(n-3)
+    hidden_layers[1] = network.forward(n-2)
     # 创建输出层：只保留第1个参数
-    output_layer = network.forward(network.n_layers-1)
+    output_layer = network.forward(n-1)
     # 迭代
     n_iter = 0
     while n_iter < 100:
-        hidden_layers[1].backward(network.n_layers-2, 0.7)
-        hidden_layers[0].backward(network.n_layers-3, 0.6)
+        hidden_layers[1].backward(n-2, 0.7)
+        hidden_layers[0].backward(n-3, 0.6)
         input_layer.backward(0, 0.7)
-        hidden_layers[0].forward(network.n_layers-3)
-        hidden_layers[1].forward(network.n_layers-2)
-        output_layer.forward(network.n_layers-1)
+        hidden_layers[0].forward(n-3)
+        hidden_layers[1].forward(n-2)
+        output_layer.forward(n-1)
         if math.sqrt(np.sum(np.square(network.prediction() - y_train))) <= 0.01:
             break
         n_iter += 1
